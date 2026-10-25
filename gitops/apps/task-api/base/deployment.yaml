@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: task-api
-          image: task-api:0.1.0
+          image: 979538921857.dkr.ecr.ap-southeast-2.amazonaws.com/task-api:0.1.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
