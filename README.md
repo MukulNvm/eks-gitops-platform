@@ -6,7 +6,9 @@ A containerized FastAPI application deployed to Amazon EKS using Terraform, Kust
 
 Terraform provisions the AWS network and EKS cluster. Docker builds and pushes the API image to ECR. Argo CD watches this repository and syncs the Kubernetes manifests from Git.
 
-Image build and push are currently manual; Argo CD automates deployment.
+Image build and push are manual; Argo CD automates deployment.
+
+![Argo CD showing the Task API synced and healthy with its running pod](docs/images/argocd-task-api-healthy.png)
 
 ## Stack
 
@@ -19,6 +21,7 @@ app/                  FastAPI application and Dockerfile
 infra/terraform/      AWS infrastructure
 gitops/apps/          Kubernetes base and dev overlay
 gitops/argocd/        Argo CD Application
+docs/images/          Argo CD deployment screenshot
 ```
 
 ## Run locally
@@ -39,28 +42,20 @@ Set your public IP as `admin_cidr` in the ignored file `infra/terraform/terrafor
 Set-Location .\infra\terraform
 terraform init
 terraform apply
-```
-
-After configuring `kubectl` and installing Argo CD, apply the Argo CD Application:
-
-```powershell
+Set-Location ..\..
 kubectl apply -f .\gitops\argocd\task-api-dev.yaml
 ```
 
-The application is available inside the cluster at Service `task-api`, port `80`.
+The application runs inside the cluster as Service `task-api` on port `80`.
 
 ## Cleanup
 
-After the project is published, destroy the Terraform infrastructure:
+After publishing the project, destroy the infrastructure and delete the separate ECR repository:
 
 ```powershell
 Set-Location .\infra\terraform
 terraform destroy
-```
-
-Then remove the ECR repository:
-
-```powershell
+Set-Location ..\..
 aws ecr delete-repository --repository-name task-api --region ap-southeast-2 --force
 ```
 
